@@ -1,0 +1,11 @@
+<h1> Welcome to Minimal HearthStone! Game Name: <%= @game %></h1>
+<script>
+  window.gameName = "<%= @game %>";
+</script>
+<div class="row">
+  <div class="col">
+    <div id="root">
+      <p>React Game Loading...</p>
+    </div>
+  </div>
+</div>

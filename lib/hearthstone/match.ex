@@ -6,9 +6,8 @@ defmodule Hearthstone.Match do
     cards = Game.list_cards()
     card_range = 1..length(cards)
     %{
+      "player" => "player1",
       "turn_num" => 1,
-      #player1_deck: Enum.take_random(card_range, 30),
-      #player2_deck: Enum.take_random(card_range, 30),
       "player1" => new_player(card_range),
       "player2" => new_player(card_range)
     }
@@ -52,13 +51,9 @@ defmodule Hearthstone.Match do
     end)
   end
 
-  def replenish_mana(turn_num) when turn_num <= 10 do
-    turn_num
-  end
-
+  def replenish_mana(turn_num) when turn_num <= 10, do: turn_num
   def replenish_mana(turn_num), do: 10
   
-  #TODO: should hand have a card map or just index
   def draw(player_state) do 
     if length(player_state.deck) > 0 do
       [head | tail] = player_state.deck
@@ -79,11 +74,9 @@ defmodule Hearthstone.Match do
     }    
   end
 
-  #TODO
   def place(game, player, card_index) do 
     player_state = game["#{player}"]
 
-    #card = Game.get_card(card_id)
     card = Enum.at(player_state.hand, card_index)
 
     if card.cost <= player_state.mana do
@@ -97,22 +90,8 @@ defmodule Hearthstone.Match do
     end
   end
 
-  #TODO: minions can only attack once
   def attack_hero(game, player, card_index) do
-    #card = Game.get_card(card_id)
     card = Enum.at(game["#{player}"].minions, card_index)
-    #if player == "player1" do 
-    #  player_state = game["player2"] 
-    #  |> Map.put(:health, game["player2"].health - card.attack)
-
-    #  card = Map.put(card, :can_attack, false)
-    #  opp
-    #  game = Map.put(game, "player2", player_state)
-    #else
-    #  player_state = game["player1"]
-    #  |> Map.put(:health, game["player1"].health - card.attack)
-    #  game = Map.put(game, "player1", player_state)
-    #end
     opp_state = Map.put(game["#{opp_player(player)}"], :health, game["#{opp_player(player)}"].health - card.attack)
     card = Map.put(card, :can_attack, false)
     player_state = game["#{player}"]
@@ -183,21 +162,19 @@ defmodule Hearthstone.Match do
     |> Map.put(:opp_health, opp_p.health)
   end
 
-  #TODO: get rid of dead minions
-  #TODO: abstract
   def enforcer(game) do
     p1 = game["player1"]
     p2 = game["player2"]
-    minions_p1 = Enum.map(p1.minions, fn (min) ->
-      if min.health > 0 do 
-        min
-      else
-        []
-      end
-    end)
-    |> List.flatten
+    minions_p1 = get_alive(p1.minions)
+    minions_p2 = get_alive(p2.minions)
 
-    minions_p2 = Enum.map(p2.minions, fn (min) ->
+    Map.put(game, "player1", Map.put(p1, :minions, minions_p1))
+    |> Map.put("player2", Map.put(p2, :minions, minions_p2))
+
+  end
+
+  def get_alive(minions) do
+    Enum.map(minions, fn (min) -> 
       if min.health > 0 do
         min
       else
@@ -205,10 +182,6 @@ defmodule Hearthstone.Match do
       end
     end)
     |> List.flatten
-
-    Map.put(game, "player1", Map.put(p1, :minions, minions_p1))
-    |> Map.put("player2", Map.put(p2, :minions, minions_p2))
-
   end
 
 end

@@ -19,3 +19,46 @@ import "phoenix_html"
 // paths "./socket" or full ones "web/static/js/socket".
 
 // import socket from "./socket"
+
+import $ from "jquery";
+
+function add_card() {
+  $('#add-card').submit(function(ev) {
+    ev.preventDefault();
+   
+    var title = $('#card-title').val();
+    var attack = $('#card-attack').val();
+    var health = $('#card-health').val();
+    var cost = $('#card-cost').val();
+
+    var new_card = JSON.stringify({
+      card: {
+        title: title,
+        attack: attack,
+        health: health,
+        cost: cost
+      },
+    });
+
+    $.ajax("/api/v1/cards", {
+      method: "post",
+      dataType: "text",
+      //data: new_card,
+      contentType: "application/json; charset=UTF-8",
+      data: new_card,
+      success: (succ) => { console.log(succ); },
+      error: (err) => { console.log(err); },
+    });
+
+  });
+}
+
+function init() {
+  if ($('#add-card')) {
+    console.log("New card");
+    //$('#submit-card').click(add_card);
+    add_card();
+  }
+}
+
+$(init);

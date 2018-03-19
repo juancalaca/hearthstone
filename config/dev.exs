@@ -51,8 +51,8 @@ config :phoenix, :stacktrace_depth, 20
 # Configure your database
 config :hearthstone, Hearthstone.Repo,
   adapter: Ecto.Adapters.Postgres,
-  username: "postgres",
-  password: "postgres",
+  username: "hearthstone",
+  password: "oi9chaethaP2",
   database: "hearthstone_dev",
   hostname: "localhost",
   pool_size: 10

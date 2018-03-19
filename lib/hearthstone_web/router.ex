@@ -17,10 +17,12 @@ defmodule HearthstoneWeb.Router do
     pipe_through :browser # Use the default browser stack
 
     get "/", PageController, :index
+    get "/add", PageController, :add
   end
 
   # Other scopes may use custom stacks.
-  # scope "/api", HearthstoneWeb do
-  #   pipe_through :api
-  # end
+  scope "/api/v1", HearthstoneWeb do
+    pipe_through :api
+    resources "/cards", CardController, except: [:new, :edit]
+  end
 end

@@ -14,6 +14,7 @@ defmodule Hearthstone.Application do
       supervisor(HearthstoneWeb.Endpoint, []),
       # Start your own worker by calling: Hearthstone.Worker.start_link(arg1, arg2, arg3)
       # worker(Hearthstone.Worker, [arg1, arg2, arg3]),
+      worker(HearthstoneWeb.Backup, [%{}])
     ]
 
     # See https://hexdocs.pm/elixir/Supervisor.html

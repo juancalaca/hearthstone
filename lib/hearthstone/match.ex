@@ -123,7 +123,9 @@ defmodule Hearthstone.Match do
 
   # Prototype by index of card in list
   # Something else 
+  # TODO: CLEANup
   # TODO: Check if minion can attack
+  # TODO: Where to check if minion can attack, front end or back end, or both?
   def attack_minion(game, player, card_ind, ocard_ind) do
     p1 = game["player1"]
     p2 = game["player2"]
@@ -179,6 +181,34 @@ defmodule Hearthstone.Match do
     |> Map.put(:opp_mana, opp_p.mana)
     |> Map.put(:health, curr_p.health)
     |> Map.put(:opp_health, opp_p.health)
+  end
+
+  #TODO: get rid of dead minions
+  #TODO: abstract
+  def enforcer(game) do
+    p1 = game["player1"]
+    p2 = game["player2"]
+    minions_p1 = Enum.map(p1.minions, fn (min) ->
+      if min.health > 0 do 
+        min
+      else
+        []
+      end
+    end)
+    |> List.flatten
+
+    minions_p2 = Enum.map(p2.minions, fn (min) ->
+      if min.health > 0 do
+        min
+      else
+        []
+      end
+    end)
+    |> List.flatten
+
+    Map.put(game, "player1", Map.put(p1, :minions, minions_p1))
+    |> Map.put("player2", Map.put(p2, :minions, minions_p2))
+
   end
 
 end

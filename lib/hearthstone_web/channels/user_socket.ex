@@ -3,6 +3,7 @@ defmodule HearthstoneWeb.UserSocket do
 
   ## Channels
   # channel "room:*", HearthstoneWeb.RoomChannel
+  channel "games:*", HearthstoneWeb.GamesChannel
 
   ## Transports
   transport :websocket, Phoenix.Transports.WebSocket

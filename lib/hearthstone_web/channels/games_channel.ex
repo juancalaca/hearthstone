@@ -18,7 +18,7 @@ defmodule HearthstoneWeb.GamesChannel do
           game = Match.new()
           Backup.save_game(name, game)
           socket = assign(socket, :name, name)
-          Endpoint.broadcast "games:" <> name, "player1", %{"game" => Match.game_view(game, "player1")}
+          Endpoint.broadcast "games:" <> name, "update", %{"game" => Match.game_view(game, "player1")}
           {:ok, %{"player" => "player2", "game" => Match.game_view(game, "player2")}, socket}
         end
       end

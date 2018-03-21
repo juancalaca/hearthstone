@@ -79,14 +79,28 @@ defmodule HearthstoneWeb.GamesChannel do
         {:noreply, socket}
     end 
   end
+  
+  # Want to have a different message?
+  def handle_in("endturn", payload, socket) do
+    game = Backup.get_game(socket.assigns[:name])
+    game = Match.end_turn(game)
+    broadcast! socket, "turnchange", %{"game" => game}
+    {:noreply, socket}
+  end
 
 
-  intercept ["update"]
+  intercept ["update", "turnchange"]
 
   def handle_out("update", payload, socket) do
-      payload = Map.put(payload, :game, Match.game_view(payload["game"], socket.assigns[:player]))
-      push socket, "update", payload
-      {:noreply, socket}
+    payload = Map.put(payload, :game, Match.game_view(payload["game"], socket.assigns[:player]))
+    push socket, "update", payload
+    {:noreply, socket}
+  end
+
+  def handle_out("turnchange", payload, socket) do
+    payload = Map.put(payload, :game, Match.game_view(payload["game"], socket.assigns[:player]))
+    push socket, "turnchange", payload
+    {:noreply, socket}  
   end
 
   defp authorized?(params) do

@@ -103,4 +103,9 @@ defmodule Hearthstone.Game do
   def change_card(%Card{} = card) do
     Card.changeset(card, %{})
   end
+
+  def get_indeces() do
+    Repo.all(from c in Card,
+             select: c.id)
+  end
 end

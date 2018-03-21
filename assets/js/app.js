@@ -54,26 +54,38 @@ function add_card() {
 }
 
 function init() {
-  if ($('#add-card')) {
+  
+  let add_card = document.getElementById("add-card");
+  if (add_card) {
     console.log("New card");
     //$('#submit-card').click(add_card);
     add_card();
   }
 
-  if ($('#root')) {
+  let root = document.getElementById("root");
+  if (root) {
     let channel = socket.channel("games:" + window.gameName, {})
     channel.join()
-      .receive("ok", resp => { window.player = resp.player; })
+      .receive("ok", resp => { window.player = resp.player; if(resp.game) game = resp.game; })
       .receive("error", resp => { console.log("Unable to join", resp); }) 
-     //if (window.player == "player1") {
-      channel.on("update", resp => { console.log(resp); }) 
-      channel.on("start", resp => { console.log(resp); })
-     //}
+      
+      let game = null;
+      channel.on("update", resp => { game = resp.game; console.log(resp.game) }) 
+      channel.on("start", resp => { game = resp.game; console.log(game)})
 
       $('#turn').click(function(ev) {
          channel.push("turn", {})
                 .receive("error", resp => { console.log(resp); })
       })
+
+      $('#endturn').click(function(ev) {
+          channel.push("endturn", {})
+                 .receive("error", resp => { console.log(resp); })
+      })
+
+      if (game) {
+      document.getElementById("display").innerHTML = "<ul><li>Player: " + window.player + "</li><li>Turn: " + game.player + "</li><li>Deck: " + game.deck + "</li>";
+      }
   }
 }
 

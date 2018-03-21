@@ -2,9 +2,7 @@ defmodule Hearthstone.Match do
   alias Hearthstone.Game
 
   def new() do
-    # TODO: want this? TODO: make card_range the actual indices in the DB
-    cards = Game.list_cards()
-    card_range = 1..length(cards)
+    card_range = Game.get_indeces
     %{
       "player" => "player1",
       "turn_num" => 1,
@@ -19,7 +17,7 @@ defmodule Hearthstone.Match do
       minions: [],
       health: 30,
       hand: [],
-      mana: 1,
+      mana: 1
     }
   end
 
@@ -182,6 +180,7 @@ defmodule Hearthstone.Match do
     curr_p = game["#{player}"]
     opp_p = game["#{opp_player(player)}"]
     view = %{}
+    |> Map.put(:player, game["player"])
     |> Map.put(:deck, length(curr_p.deck))
     |> Map.put(:opp_deck, length(opp_p.deck))
     |> Map.put(:hand, curr_p.hand)
@@ -216,5 +215,8 @@ defmodule Hearthstone.Match do
     |> List.flatten
   end
 
+  def end_turn(game) do
+    Map.put(game, "player", opp_player(game["player"]))
+  end
 end
 

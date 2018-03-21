@@ -19,13 +19,14 @@ import "phoenix_html"
 // paths "./socket" or full ones "web/static/js/socket".
 
 import socket from "./socket"
+import run_hearthstone from "./hearthstone"
 
 import $ from "jquery";
 
 function add_card() {
   $('#add-card').submit(function(ev) {
     ev.preventDefault();
-   
+
     var title = $('#card-title').val();
     var attack = $('#card-attack').val();
     var health = $('#card-health').val();
@@ -54,7 +55,7 @@ function add_card() {
 }
 
 function init() {
-  
+
   let add_card = document.getElementById("add-card");
   if (add_card) {
     console.log("New card");
@@ -65,13 +66,16 @@ function init() {
   let root = document.getElementById("root");
   if (root) {
     let channel = socket.channel("games:" + window.gameName, {})
-    channel.join()
-      .receive("ok", resp => { window.player = resp.player; if(resp.game) game = resp.game; })
-      .receive("error", resp => { console.log("Unable to join", resp); }) 
-      
-      let game = null;
-      channel.on("update", resp => { game = resp.game; console.log(resp.game) }) 
-      channel.on("start", resp => { game = resp.game; console.log(game)})
+
+    render_hearthstone(root, channel);
+
+    // channel.join()
+    //   .receive("ok", resp => { window.player = resp.player; if(resp.game) game = resp.game; })
+    //   .receive("error", resp => { console.log("Unable to join", resp); })
+    //
+    //   let game = null;
+    //   channel.on("update", resp => { game = resp.game; console.log(resp.game) })
+    //   channel.on("start", resp => { game = resp.game; console.log(game)})
 
       $('#turn').click(function(ev) {
          channel.push("turn", {})
@@ -83,9 +87,9 @@ function init() {
                  .receive("error", resp => { console.log(resp); })
       })
 
-      if (game) {
-      document.getElementById("display").innerHTML = "<ul><li>Player: " + window.player + "</li><li>Turn: " + game.player + "</li><li>Deck: " + game.deck + "</li>";
-      }
+      //if (game) {
+      //document.getElementById("display").innerHTML = "<ul><li>Player: " + window.player + "</li><li>Turn: " + game.player + "</li><li>Deck: " + game.deck + "</li>";
+      //}
   }
 }
 

@@ -6,6 +6,7 @@
   <div class="col">
     <div id="root">
       <p>React Game Loading...</p>
+      <button id="turn"> Turn </button>
     </div>
   </div>
 </div>

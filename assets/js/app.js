@@ -67,8 +67,13 @@ function init() {
       .receive("error", resp => { console.log("Unable to join", resp); }) 
      //if (window.player == "player1") {
       channel.on("update", resp => { console.log(resp); }) 
-
+      channel.on("start", resp => { console.log(resp); })
      //}
+
+      $('#turn').click(function(ev) {
+         channel.push("turn", {})
+                .receive("error", resp => { console.log(resp); })
+      })
   }
 }
 

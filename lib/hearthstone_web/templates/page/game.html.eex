@@ -6,9 +6,33 @@
   <div class="col">
     <div id="root">
       <p>React Game Loading...</p>
-      <button id="turn"> Turn </button>
-      <button id="endturn"> End Turn </button>
-      <div id="display"> </div>
     </div>
+    <button id="turn"> Turn </button>
+    <button id="endturn"> End Turn </button>
+    <form id="place">
+      <div>
+        Minion to move: 
+        <input type="number" id="place-min">
+      </div>
+      <input class="btn btn-primary" type="submit" value="Play" >
+    </form>  
+    <form id="attack-min" >
+      <div>
+        Attacker minion:
+        <input type="number" id="attacker-min">
+      </div>
+      <div>
+        Receiver minion:
+        <input type="number" id="rec-min" >
+      </div>
+      <input class="btn btn-primary" type="submit" value="Attack Minion" >
+    </form>
+    <form id="attack-hero">
+      <div>
+        Attacker minion:
+        <input type="number" id="attacker">
+      </div>
+      <input type="submit" value="Attack Hero">
+    </form>
   </div>
 </div>

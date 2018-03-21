@@ -24,14 +24,16 @@ class Hearthstone extends React.Component {
     });
 
     this.channel.join()
-                .receive("ok", resp => this.join.bind(this))
+                .receive("ok", this.joinGame.bind(this))
                 .receive("error", resp => console.log(resp));
 
     this.channel.on("update", this.update.bind(this));
     this.channel.on("start", this.startMatch.bind(this));
+    this.channel.on("turnchange", this.update.bind(this));
   }
 
-  join(resp) {
+  joinGame(resp) {
+    console.log("joined called");
     if (resp.game) {
       window.player = resp.player;
       this.setState(resp.game);
@@ -44,7 +46,7 @@ class Hearthstone extends React.Component {
     this.setState(game.game);
   }
 
-  start(game) {
+  startMatch(game) {
     this.setState(game.game);
   }
 
@@ -56,10 +58,10 @@ class Hearthstone extends React.Component {
           <li>{"Turn: " + this.state.player}</li>
           <li>{"Deck: " + this.state.deck}</li>
           <li>{"Opp Deck: " + this.state.opp_deck}</li>
-          <li>{"Hand: " + this.state.hand }</li>
+          <li>{"Hand: "} <Cards cards={this.state.hand} /></li>
           <li>{"Opp Hand: " + this.state.opp_hand}</li>
-          <li>{"Minions: " + this.state.minions}</li>
-          <li>{"Opp Minions: " + this.state.opp_minions}</li>
+          <li>{"Minions: "} <Cards cards={this.state.minions} /></li>
+          <li>{"Opp Minions: "} <Cards cards={this.state.opp_minions} /></li>
           <li>{"Mana: " + this.state.mana}</li>
           <li>{"Opp Mana: " + this.state.opp_mana}</li>
           <li>{"Health: " + this.state.health}</li>
@@ -68,4 +70,21 @@ class Hearthstone extends React.Component {
       </div>
     );
   }
+}
+
+function Cards(props) {
+  return (
+    _.map(props.cards, (card, ii) => {
+      return (
+        <span>
+          {"ID " + card.id}
+          {" , Attack: " + card.attack}
+          {" , Health: " + card.health}
+          {" , Cost: " + card.cost}
+          {" , Can Attack: " + card.can_attack}
+          <br /> 
+        </span>
+      );
+    })
+  );
 }

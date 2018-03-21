@@ -67,7 +67,7 @@ function init() {
   if (root) {
     let channel = socket.channel("games:" + window.gameName, {})
 
-    render_hearthstone(root, channel);
+    run_hearthstone(root, channel);
 
     // channel.join()
     //   .receive("ok", resp => { window.player = resp.player; if(resp.game) game = resp.game; })
@@ -90,6 +90,32 @@ function init() {
       //if (game) {
       //document.getElementById("display").innerHTML = "<ul><li>Player: " + window.player + "</li><li>Turn: " + game.player + "</li><li>Deck: " + game.deck + "</li>";
       //}
+     $('#place').submit(function(ev) {
+       ev.preventDefault();
+       var card_index = $('#place-min').val();
+
+       channel.push("place", {card_index: parseInt(card_index)})
+              .receive("error", resp => {window.alert(resp.reason)});
+     });
+
+    $('#attack-min').submit(function(ev) {
+      ev.preventDefault();
+      var att_ind = $('#attacker-min').val()
+      var rec_ind = $('#rec-min').val()
+
+      channel.push("attack_min", {card_ind: parseInt(att_ind), ocard_ind: parseInt(rec_ind)})
+             .receive("error", resp => {window.alert(resp.reason)})
+    })
+  
+    $('#attack-hero').submit(function(ev) {
+      ev.preventDefault()
+
+      var id = $('#attacker').val()
+
+      channel.push("attack_hero", {card_index: parseInt(id)})
+             .receive("error", resp => {window.alert(resp.reason)})
+    })
+
   }
 }
 

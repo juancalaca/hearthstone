@@ -2,7 +2,7 @@ defmodule Hearthstone.Match do
   alias Hearthstone.Game
 
   def new() do
-    # TODO: want this?
+    # TODO: want this? TODO: make card_range the actual indices in the DB
     cards = Game.list_cards()
     card_range = 1..length(cards)
     %{
@@ -90,18 +90,24 @@ defmodule Hearthstone.Match do
     end
   end
 
+  # TODO: CAN MINION ATTACK?
   def attack_hero(game, player, card_index) do
     card = Enum.at(game["#{player}"].minions, card_index)
-    opp_state = Map.put(game["#{opp_player(player)}"], :health, game["#{opp_player(player)}"].health - card.attack)
-    card = Map.put(card, :can_attack, false)
-    player_state = game["#{player}"]
-    player_state = Map.put(player_state, :minions, List.replace_at(player_state.minions, card_index, card))
-    game = Map.put(game, player, player_state)
-    |> Map.put(opp_player(player), opp_state)
-    if gameover(game) do 
-      {:gameover, game}
-    else
-      {:ok, game}
+    IO.inspect card
+    if card.can_attack do 
+      opp_state = Map.put(game["#{opp_player(player)}"], :health, game["#{opp_player(player)}"].health - card.attack)
+      card = Map.put(card, :can_attack, false)
+      player_state = game["#{player}"]
+      player_state = Map.put(player_state, :minions, List.replace_at(player_state.minions, card_index, card))
+      game = Map.put(game, player, player_state)
+      |> Map.put(opp_player(player), opp_state)
+      if gameover(game) do 
+        {:gameover, game}
+      else
+        {:ok, game}
+      end
+    else 
+      {:error, game}
     end
   end
 
@@ -113,24 +119,30 @@ defmodule Hearthstone.Match do
   def attack_minion(game, player, card_ind, ocard_ind) do
     attacker = game["#{player}"] 
     if Enum.at(attacker.minions, card_ind).can_attack do
-      p1 = game["player1"]
-      p2 = game["player2"]
+      #p1 = game["player1"]
+      #p2 = game["player2"]
+      #if player == "player1" do
+      #  att = Enum.at(p1.minions, card_ind)
+      #  rec = Enum.at(p2.minions, ocard_ind)
+      #  {att, rec} = attack(att, rec)
+      #  p1 = Map.put(p1, :minions, List.replace_at(p1.minions, card_ind, att))
+      #  p2 = Map.put(p2, :minions, List.replace_at(p2.minions, ocard_ind, rec))
+      #  Map.put(game, "player1", p1)
+      #  |> Map.put("player2", p2)
+      #else
+      #  att = Enum.at(p2.minions, card_ind)
+      #  rec = Enum.at(p1.minions, ocard_ind)
+      #  {att, rec} = attack(att, rec)
+      #  p1 = Map.put(p1, :minions, List.replace_at(p1.minions, ocard_ind, rec))
+      #  p2 = Map.put(p2, :minions, List.replace_at(p2.minions, card_ind, att))
+      #  Map.put(game, "player1", p1)
+      #  |> Map.put("player2", p2)
+      #  |> enforcer
+      #end
       if player == "player1" do
-        att = Enum.at(p1.minions, card_ind)
-        rec = Enum.at(p2.minions, ocard_ind)
-        {att, rec} = attack(att, rec)
-        p1 = Map.put(p1, :minions, List.replace_at(p1.minions, card_ind, att))
-        p2 = Map.put(p2, :minions, List.replace_at(p2.minions, ocard_ind, rec))
-        Map.put(game, "player1", p1)
-        |> Map.put("player2", p2)
+        {:ok, can_attack(game, "player1", "player2", card_ind, ocard_ind)}
       else
-        att = Enum.at(p2.minions, card_ind)
-        rec = Enum.at(p1.minions, ocard_ind)
-        {att, rec} = attack(att, rec)
-        p1 = Map.put(p1, :minions, List.replace_at(p1.minions, ocard_ind, rec))
-        p2 = Map.put(p2, :minions, List.replace_at(p2.minions, card_ind, att))
-        Map.put(game, "player1", p1)
-        |> Map.put("player2", p2)
+        {:ok, can_attack(game, "player2", "player1", card_ind, ocard_ind)}
       end
     else 
       {:error, game}
@@ -143,6 +155,12 @@ defmodule Hearthstone.Match do
     att = Enum.at(attacker.minions, card_ind)
     rec = Enum.at(receiver.minions, ocard_ind)
     {att, rec} = attack(att, rec)
+    att = Map.put(att, :can_attack, false)
+    attacker = Map.put(attacker, :minions, List.replace_at(attacker.minions, card_ind, att))
+    receiver = Map.put(receiver, :minions, List.replace_at(receiver.minions, ocard_ind, rec))
+    Map.put(game, "#{att_p}", attacker)
+    |> Map.put("#{rec_p}", receiver)
+    |> enforcer
   end
 
   def attack(att, rec) do
@@ -156,11 +174,6 @@ defmodule Hearthstone.Match do
 
   # TODO: Gameover? what keeps check 
   def gameover(game) do
-    #if game[:player2].health < 0 || game[:player1].health < 0 do
-    #  true
-    #else 
-    #  false
-    #end
     game["player2"].health <= 0 || game["player1"].health <= 0
   end
 

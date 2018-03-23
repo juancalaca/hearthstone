@@ -43,18 +43,20 @@ class Hearthstone extends React.Component {
   }
 
   update(game) {
+    console.log("updating game")
     this.setState(game.game);
   }
 
   startMatch(game) {
+    console.log("starrted match")
     this.setState(game.game);
   }
 
   renderDeck(player) {
     const deckSize = player == 'player' ? this.state.deck : this.state.opp_deck;
     return (
-      <div class="deck">
-        <p class="deck-size">
+      <div className="deck">
+        <p className="deck-size">
           {deckSize}
         </p>
       </div>
@@ -62,7 +64,7 @@ class Hearthstone extends React.Component {
   }
 
   renderPlayer(player) {
-    const className;
+    let className;
     const playerName = window.player;
     if(player == 'player' && playerName == 'player1') {
       className = 'ashe';
@@ -78,8 +80,8 @@ class Hearthstone extends React.Component {
     }
     var health = player == 'player' ? this.state.health : this.state.opp_health;
     return (
-      <div class=className>
-        <p class="player-health">{health}</p>
+      <div className={className}>
+        <p className="player-health">{health}</p>
       </div>
     )
   }
@@ -93,7 +95,7 @@ class Hearthstone extends React.Component {
     }
     //class cards should put cards side by side
     return (
-      <div class="cards">
+      <div className="cards">
         {handArray.map(function(card, index) { //for what it's worth, these variables dont matter
           return (
             <Card
@@ -111,14 +113,14 @@ class Hearthstone extends React.Component {
     const { hand } = this.state;
 
     return (
-      <div class="cards">
+      <div className="cards">
         {hand.map(function(card, index) { //okay these variables are more useful
           return (
             <Card 
               attack={card.attack}
-              can_attack={false} //im assuming it's false anyway when it's in hand...
+              canAttack={false} //im assuming it's false anyway when it's in hand...
               cost={card.cost}
-              //id={card.id}
+              key={"player-hand-" + index}
               inHand={true}
               health={card.health}
               title={card.title}
@@ -131,7 +133,7 @@ class Hearthstone extends React.Component {
 
   //gonna do this without max mana for now
   renderMana(player) {
-    const mana = player == 'player' ? mana : opp_mana;
+    const mana = player == 'player' ? this.state.mana : this.state.opp_mana;
     const manaArray = [];
     //same conept with renderOppHand
     for(let i = 0; i < mana; i++) {
@@ -139,77 +141,81 @@ class Hearthstone extends React.Component {
     }
     //the cards class should also put these side by side, but it might be better to have a special mana class
     return (
-      <div class="cards">
-        {manaArray.map(function(card, index) {
+      <div className="cards">
+        {manaArray.map(function(mana, index) {
           return (
-            <div class="mana-crystal-unspent"></div>
+            <div className="mana-crystal-unspent" key={'mana-'+ index}></div>
           );
         }, this)};
-        <p class="mana-label">{mana}</p>
+        <p className="mana-label">{mana}</p>
       </div>
     );
+  }
 
-    const handArray = [];
-    //just make an array of size 'size' so that i can map over it
-    for(let i = 0; i < size; i ++) {
-      handArray.push("card")
-    }
-    //class cards should put cards side by side
+  renderBattlefield(player) {
+    var cards = player == 'player' ? this.state.minions : this.state.opp_minions;
+
     return (
-      <div class="cards">
-        {handArray.map(function(card, index) { //for what it's worth, these variables dont matter
+      <div className="cards">
+        {cards.map(function(card, index) {
           return (
             <Card
-              inHand={true} 
-              key={'opp-hand-' + index}
-              opponent={true}
+              attack={card.attack}
+              canAttack={card.can_attack}
+              health={card.health}
+              inHand={false}
+              key={'player-battlefield-' + index}
+              mana={card.cost}
+              opponent={false}
+              title={card.title}
             />
           );
         }, this)};
       </div>
     );
-
   }
 
   render() {
+    console.log("rendering, current state:")
+    console.log(this.state)
     return (
       <div>
-        <div class="enemy-side">
-          <div class="enemy-hand">
-            {renderOppHand()}
+        <div className="enemy-side">
+          <div className="enemy-hand">
+            {this.renderOppHand()}
           </div>
-          <div class="player-stats">
-            <div class="avatar">
-              {renderPlayer('opponent')}
+          <div className="player-stats">
+            <div className="avatar">
+              {this.renderPlayer('opponent')}
             </div>
-            <div class="mana">
-              {renderMana()}
+            <div className="mana">
+              {this.renderMana()}
             </div>
-            <div class="deck">
-              {renderDeck()}
+            <div className="deck">
+              {this.renderDeck()}
             </div>
           </div>
-          <div class="battlefield">
-            {renderBattlefield()}
+          <div className="battlefield">
+            {this.renderBattlefield('opponent')}
           </div>
         </div>
-        <div class="player-side">
-          <div class="enemy-hand">
-            {renderPlayerHand()}
+        <div className="player-side">
+          <div className="enemy-hand">
+            {this.renderPlayerHand()}
           </div>
-          <div class="player-stats">
-            <div class="avatar">
-              {renderPlayer('player')}
+          <div className="player-stats">
+            <div className="avatar">
+              {this.renderPlayer('player')}
             </div>
-            <div class="mana">
-              {renderMana()}
+            <div className="mana">
+              {this.renderMana()}
             </div>
-            <div class="deck">
-              {renderDeck()}
+            <div className="deck">
+              {this.renderDeck()}
             </div>
           </div>
-          <div class="battlefield">
-            {renderBattlefield()}
+          <div className="battlefield">
+            {this.renderBattlefield('player')}
           </div>
         </div>
       </div>
@@ -242,26 +248,26 @@ class Card extends React.Component {
   }
 
   render() {
-    const { id, attack, inHand, health, cost, title, can_attack, opponent, key } = this.props;
+    const { id, attack, inHand, health, cost, title, canAttack, opponent, key } = this.props;
     
     if(opponent && inHand) {
-      return {
-        <div class="backwards-card">
+      return (
+        <div className="backwards-card">
         </div>
-      }
+      );
     }
     
     const className = inHand ? "card-in-hand" : "card-on-field";
 
 
-    return {
-      <div class={className} key='key'>
+    return (
+      <div className={className} key='key'>
         <h6>{title}</h6>
         <p>Attack: {attack}</p>
         <p>Health: {health}</p>
         <p>Cost: {cost}</p>
       </div>
-    }
+    )
   }
 }
 

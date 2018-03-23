@@ -64,6 +64,7 @@ defmodule Hearthstone.Match do
   def get_card(head) do
     card = Game.get_card(head)
     %{
+      title: card.title,
       id: head,
       attack: card.attack,
       health: card.health,
@@ -185,12 +186,18 @@ defmodule Hearthstone.Match do
     |> Map.put(:opp_deck, length(opp_p.deck))
     |> Map.put(:hand, curr_p.hand)
     |> Map.put(:opp_hand, length(opp_p.hand))
-    |> Map.put(:minions, curr_p.minions)   #TODO: how to get rid of dead minions? here or before?
-    |> Map.put(:opp_minions, opp_p.minions) #TODO: only want id's or full map?
+    |> Map.put(:minions, owner(curr_p.minions, player))  #TODO: how to get rid of dead minions? here or before?
+    |> Map.put(:opp_minions, owner(opp_p.minions, opp_player(player))) #TODO: only want id's or full map?
     |> Map.put(:mana, curr_p.mana)
     |> Map.put(:opp_mana, opp_p.mana)
     |> Map.put(:health, curr_p.health)
     |> Map.put(:opp_health, opp_p.health)
+  end
+
+  def owner(minions, player) do
+    Enum.map(minions, fn (min) ->
+      Map.put(min, :owner, player)
+    end) 
   end
 
   def enforcer(game) do

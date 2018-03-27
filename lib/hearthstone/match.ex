@@ -75,6 +75,10 @@ defmodule Hearthstone.Match do
     }    
   end
 
+  def check_turn(game, player) do
+    game["player"] == player
+  end
+
   def place(game, player, card_index) do 
     player_state = game["#{player}"]
 
@@ -175,7 +179,11 @@ defmodule Hearthstone.Match do
 
   # TODO: Gameover? what keeps check 
   def gameover(game) do
-    game["player2"].health <= 0 || game["player1"].health <= 0
+    game["player2"].health <= 0 || game["player1"].health <= 0 || (no_moves(game["player1"]) && no_moves(game["player2"]))
+  end
+
+  def no_moves(game) do
+    length(game.deck) == 0 && length(game.minions) == 0 && length(game.hand) == 0
   end
 
   # Filters view appropriately for each player

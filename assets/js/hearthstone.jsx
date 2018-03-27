@@ -26,15 +26,36 @@ class Hearthstone extends React.Component {
 
     this.channel.join()
                 .receive("ok", this.joinGame.bind(this))
-                .receive("error", resp => console.log(resp));
-
+                .receive("error", resp => { this.errorAlert(resp.reason);
+                                            window.location.href = "/";})
+    
+    this.channel.on("gameover", this.gameOver.bind(this));
     this.channel.on("update", this.update.bind(this));
     this.channel.on("start", this.startMatch.bind(this));
-    this.channel.on("turnchange", this.update.bind(this));
+    this.channel.on("turnchange", this.turnChange.bind(this));
     this.cardClickHandler = this.cardClickHandler.bind(this);
     this.battlefieldClickHandler = this.battlefieldClickHandler.bind(this);
     this.faceClick = this.faceClick.bind(this);
     this.endTurn = this.endTurn.bind(this);
+  }
+
+  gameOver(resp) {
+    let message;
+    if (resp.game.health <= 0) {
+      message = "You lost this match!";
+    } else if (resp.game.opp_health <= 0) {
+      message = "You won this match!";
+    } else {
+      message = "No more moves, match is done.";
+    }
+    this.errorAlert(message);
+    window.location.href = "/";
+  }
+
+  turnChange(resp) {
+    if (resp.game.player == window.player) {
+      this.channel.push("turn", {})
+    }
   }
 
   joinGame(resp) {
@@ -56,6 +77,9 @@ class Hearthstone extends React.Component {
 
   startMatch(game) {
     this.setState(game.game);
+    if (game.game.player == "player1") {
+      this.channel.push("turn", {});
+    }
   }
 
   errorAlert(msg) {
@@ -67,7 +91,7 @@ class Hearthstone extends React.Component {
     const { selected } = this.state;
     this.channel.push("place", { card_index: selected.index })
       .receive("ok", this.update.bind(this))
-      .receive("error", resp => { this.errorAlert("Not enough mana!") });
+      .receive("error", resp => { this.errorAlert(resp.reason) });
   }
 
   fight(minionIndex) {
@@ -75,7 +99,7 @@ class Hearthstone extends React.Component {
     const { selected } = this.state;
     this.channel.push("attack_min", {card_ind: selected.index, ocard_ind: minionIndex })
       .receive("ok", this.update.bind(this))
-      .receive("error", resp => { this.errorAlert("Minion cannot attack this turn") })
+      .receive("error", resp => { this.errorAlert(resp.reason) })
   }
 
   //if opponent = true, it belongs to the opponent
@@ -122,7 +146,7 @@ class Hearthstone extends React.Component {
       this.channel.push("attack_hero", { card_index: selected.index })
         .receive("ok", this.update.bind(this))
         .receive("gameover", resp => { alert("Game over! " + window.player + " has won.") })
-        .receive("error", resp => { this.errorAlert("Minion cannot attack this turn") })
+        .receive("error", resp => { this.errorAlert(resp.reason) })
     }
     else {
       console.log("unselecting card from face")
@@ -131,7 +155,8 @@ class Hearthstone extends React.Component {
   }
 
   endTurn() {
-    this.channel.push("endturn")
+    this.channel.push("endturn", {})
+                .receive("error", resp => { this.errorAlert(resp.reason) })
   }
 
   renderDeck(player) {
@@ -343,7 +368,7 @@ class Hearthstone extends React.Component {
               {this.renderMana('opponent')}
             </div>
             <div className="deck">
-              {this.renderDeck()}
+              {this.renderDeck('opponent')}
             </div>
           </div>
           <div className="battlefield-opp">
@@ -367,7 +392,7 @@ class Hearthstone extends React.Component {
               {this.renderMana('player')}
             </div>
             <div className="deck">
-              {this.renderDeck()}
+              {this.renderDeck('player')}
             </div>
           </div>
           <div className="player-hand">

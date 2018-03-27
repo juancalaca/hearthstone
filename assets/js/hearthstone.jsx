@@ -69,8 +69,6 @@ class Hearthstone extends React.Component {
 
   update(game) {
     const updated = game.game;
-    console.log("updateeee?")
-    console.log(updated)
     updated.selected = {};
     this.setState(updated);
   }
@@ -95,7 +93,6 @@ class Hearthstone extends React.Component {
   }
 
   fight(minionIndex) {
-    console.log("fighting")
     const { selected } = this.state;
     this.channel.push("attack_min", {card_ind: selected.index, ocard_ind: minionIndex })
       .receive("ok", this.update.bind(this))
@@ -104,11 +101,9 @@ class Hearthstone extends React.Component {
 
   //if opponent = true, it belongs to the opponent
   cardClickHandler(location, index, opponent) {
-    console.log("cardClickHandler")
     const { selected } = this.state;
     //if no card is selected and the selected card is an opponents
     if(Object.keys(selected).length === 0 && !opponent) {
-      console.log("setting new selected card")
       //then this card becomes 'selected'
       const newSelected = { location, index };
       this.setState({ selected: newSelected });
@@ -116,11 +111,9 @@ class Hearthstone extends React.Component {
     }
     if(selected.location == 'battlefield' && opponent 
       && location == 'battlefield')  {
-      console.log("FIGHT")
       this.fight(index) //make sure those functions reset selected
       return;
     }
-    console.log("unselecting from card")
     this.setState({ selected: {} });
     return;
     //hopefully this means literally anything other condition will
@@ -130,26 +123,19 @@ class Hearthstone extends React.Component {
   battlefieldClickHandler(player) {
     const { selected } = this.state;
     if(Object.keys(selected).length > 0  && selected.location == 'hand') {
-      console.log("placing card")
       this.place()
-    }
-    else {
-      // console.log("unselecting card from battlefield")
-      //this.setState({ selected: {} });
     }
   }
 
   faceClick() {
     const { selected } = this.state;
     if(Object.keys(selected).length > 0 && selected.location == 'battlefield') {
-      console.log("swinging at face")
       this.channel.push("attack_hero", { card_index: selected.index })
         .receive("ok", this.update.bind(this))
-        .receive("gameover", resp => { alert("Game over! " + window.player + " has won.") })
+        //.receive("gameover", resp => { alert("Game over! " + window.player + " has won.") })
         .receive("error", resp => { this.errorAlert(resp.reason) })
     }
     else {
-      console.log("unselecting card from face")
       this.setState({ selected: {} });
     }
   }
@@ -164,7 +150,7 @@ class Hearthstone extends React.Component {
     return (
       <div className="deck">
         <p className="deck-size">
-          {deckSize}
+          Deck: {deckSize}
         </p>
       </div>
     );
@@ -173,25 +159,24 @@ class Hearthstone extends React.Component {
   renderPlayer(player) {
     let className;
     const playerName = window.player;
-    /* ill do this logic later
     if(player == 'player' && playerName == 'player1') {
-      className = 'ashe';
+      className = 'jaina';
     }
     else if(player == 'player' && playerName == 'player2') {
       className = 'GARROSH';
     }
     else if(player == 'opponent' && playerName == 'player1') {
-      className = 'GARROSH';
+      className = 'GARROSH enemy-hover';
     }
-    if(player == 'player' && playerName == 'player2') {
-      className = 'ashe';
-    }*/ //LOL ITS JAINA NOT ASHE YOU NOOB
-    if(player == 'player') {
+    if(player == 'opponent' && playerName == 'player2') {
+      className = 'jaina enemy-hover';
+    }
+    /* if(player == 'player') {
       className = 'jaina'
     }
     else {
       className = "GARROSH"
-    }
+    } */
     className += ' player-avatar text-center'
     var health = player == 'player' ? this.state.health : this.state.opp_health;
     return (
@@ -218,7 +203,7 @@ class Hearthstone extends React.Component {
               <Card
                 clickHandler={this.cardClickHandler}
                 inHand={true} 
-                keyname={'opp-hand-' + index}
+                key={'opp-hand-' + index}
                 opponent={true}
                 selectedCard={this.state.selected}
               />
@@ -231,8 +216,6 @@ class Hearthstone extends React.Component {
 
   renderPlayerHand() {
     const { hand } = this.state;
-    console.log("RENDERING PLAYE RHAND")
-    console.log(this.clickHandler)
     return (
       <div className="container">
         <div className="row">
@@ -244,7 +227,7 @@ class Hearthstone extends React.Component {
                 clickHandler={this.cardClickHandler}
                 cost={card.cost}
                 index={index}
-                keyname={"player-hand-" + index}
+                key={"player-hand-" + index}
                 inHand={true}
                 health={card.health}
                 opponent={false}
@@ -272,7 +255,7 @@ class Hearthstone extends React.Component {
         <div className="row">
           {manaArray.map(function(mana, index) {
             return (
-              <div className="mana-crystal-unspent" keyname={'mana-'+ index}></div>
+              <div className="mana-crystal-unspent" key={'mana-'+ index}></div>
             );
           }, this)}
         </div>
@@ -298,7 +281,7 @@ class Hearthstone extends React.Component {
                 health={card.health}
                 index={index}
                 inHand={false}
-                keyname={keyPrefix + index}
+                key={keyPrefix + index}
                 mana={card.cost}
                 opponent={player == 'opponent' ? true : false}
                 selectedCard={this.state.selected}
@@ -312,49 +295,26 @@ class Hearthstone extends React.Component {
   }
 
   renderEndTurnButton() {
-    const colorClass = (window.player == this.state.player) ? 'green' : 'grey';
+    const colorClass = (window.player == this.state.player) ? 'green smaller-player-hover' : 'grey';
+
     return (
-      <div 
-        className={colorClass + " top-right"}
+      <div
+        className={colorClass + " top-right end-turn"}
         onClick={this.endTurn}>
-        <p>End turn</p>
+        <h6 className="text-center">End turn</h6>
       </div>
     )
   }
 
-  makeFakeState() {
-    //const {deck, hand, minions, health, opp_deck, opp_hand, opp_minions, opp_hand}
-    this.state.opp_hand = 4;
-    this.state.hand = [
-      {id: 1, attack: 4, health: 4, cost: 3, can_attack: true, title: 'Totem'},
-      {id: 2, attack: 1, health: 1, cost: 1, can_attack: true, title: 'Murloc'},
-      {id: 3, attack: 15, health: 15, cost: 8, can_attack: true, title: 'JARRAXUS'},
-    ];
-    this.state.mana = 3;
-    this.state.opp_mana = 4;
-    this.state.health = 25;
-    this.state.opp_health = 27;
-    this.state.minions = [
-      {id: 4, attack: 4, health: 5, cost: 7, can_attack: true, title: 'Sylvanas'},
-      {id: 5, attack: 5, health: 5, cost: 5, can_attack: true, title: 'The Black Knight'},
-      {id: 6, attack: 15, health: 15, cost: 1, can_attack: true, title: 'Innervate?'},
-    ];
-
-    this.state.opp_minions = [
-      {id: 7, attack: 10, health: 10, cost: 7, can_attack: false, title: 'Big boi'},
-    ];
-  
-    this.state.deck = 20;
-    this.state.opp_deck = 21;
-    //do specific cards later
-
-  }
-
   render() {
-    console.log("render, selected:")
-    //this.makeFakeState();
-    console.log(this.state)
 
+    //a really specifically placed workaround to ensure that the player's battlefield only lights up on hover if
+    //there is a currently selected card from their hand. this is what happens when i fix things this far into the process
+    let playerBattlefieldClassName = 'battlefield-player';
+    const { selected } = this.state;
+    if(Object.keys(selected).length > 0 && selected.location == 'hand') {
+      playerBattlefieldClassName += ' smaller-player-hover';
+    }
     return (
       <div>
         <div className="enemy-side">
@@ -380,7 +340,7 @@ class Hearthstone extends React.Component {
         </div>
         <div className="player-side">
           <div 
-            className="battlefield-player"
+            className={playerBattlefieldClassName}
             onClick={this.battlefieldClickHandler}>
             <div>
               {this.renderEndTurnButton()}>
@@ -404,24 +364,6 @@ class Hearthstone extends React.Component {
         </div>
       </div>
     )
-    /*return (
-      <div>
-        <ul>
-          <li>{"Player: " + window.player}</li>
-          <li>{"Turn: " + this.state.player}</li>
-          <li>{"Deck: " + this.state.deck}</li>
-          <li>{"Opp Deck: " + this.state.opp_deck}</li>
-          <li>{"Hand: "} <Cards cards={this.state.hand} /></li>
-          <li>{"Opp Hand: " + this.state.opp_hand}</li>
-          <li>{"Minions: "} <Cards cards={this.state.minions} /></li>
-          <li>{"Opp Minions: "} <Cards cards={this.state.opp_minions} /></li>
-          <li>{"Mana: " + this.state.mana}</li>
-          <li>{"Opp Mana: " + this.state.opp_mana}</li>
-          <li>{"Health: " + this.state.health}</li>
-          <li>{"Opp Health: " + this.state.opp_health}</li>
-        </ul>
-      </div>
-    );*/
   }
 }
 
@@ -439,7 +381,7 @@ class Card extends React.Component {
   }
 
   render() {
-    const { attack, id, index, inHand, health, cost, title, canAttack, opponent, keyname, selectedCard } = this.props;
+    const { attack, id, index, inHand, health, cost, title, canAttack, opponent, selectedCard } = this.props;
     let selected = selectedCard;
     if(Object.keys(selected).length === 0) {
       selected = {location: null, index: null}
@@ -456,7 +398,7 @@ class Card extends React.Component {
     let className = opponent ? 'enemy-hover' : 'player-hover';
     //if this card matches the currently selected card, keep it outlined. matching the location gets a bit verbose but it works
     if(!opponent && index == selected.index && 
-      (inHand && selected.location == "hand") || (!inHand && selected.location == "battlefield")) {
+      ((inHand && selected.location == "hand") || (!inHand && selected.location == "battlefield"))) {
       className += ' selected';
     }
     //if it's in the player's hand
@@ -465,46 +407,32 @@ class Card extends React.Component {
       return (
         <div 
           className={className}
-          key={keyname}
           onClick={this.handleClick}>
-          <h6>{title}</h6>
-          <p className="bottom-left attack">A: {attack}</p>
-          <p className="bottom-right health">H: {health}</p>
-          <p className="top-left cost">{cost}</p>
+          <h6 className="centered-letter text-center">{title}</h6>
+          <h6 className="bottom-left attack">{attack}</h6>
+          <h6 className="bottom-right health">{health}</h6>
+          <h6 className="top-left cost">{cost}</h6>
         </div>
       )
     }
 
     else {
       className += ' card-on-field';
+      if(canAttack && opponent) {
+        className += ' opponent-can-attack';
+      }
+      if(canAttack && !opponent) {
+        className += ' player-can-attack';
+      }
       return (
         <div 
           className={className} 
-          key={keyname}
           onClick={this.handleClick}>
-          <h3 className="centered-letter text-center">{title.charAt(0)}</h3>
-          <p className="bottom-left attack">{attack}</p>
-          <p className="bottom-right health">{health}</p>
+          <h4 className="centered-letter text-center">{title.substring(0, 3) + "."}</h4>
+          <h6 className="bottom-left attack">{attack}</h6>
+          <h6 className="bottom-right health">{health}</h6>
         </div>
       )
     }
   }
-}
-
-
-function Cards(props) {
-  return (
-    _.map(props.cards, (card, ii) => {
-      return (
-        <span>
-          {"ID " + card.id}
-          {" , Attack: " + card.attack}
-          {" , Health: " + card.health}
-          {" , Cost: " + card.cost}
-          {" , Can Attack: " + card.can_attack}
-          <br /> 
-        </span>
-      );
-    })
-  );
 }

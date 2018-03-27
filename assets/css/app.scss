@@ -30,6 +30,14 @@
 	background-color: #A89787;
 }
 
+.opponent-can-attack {
+	background-color: #E68E8E;
+}
+
+.player-can-attack {
+	background-color: #B6DCA2;
+}
+
 .centered-letter {
 	margin-top: 4vh;
 }
@@ -83,9 +91,9 @@
 }
 
 .mana-crystal-unspent {
-	height: 5vh;
-	width: 5vh;
-	margin: 2vh;
+	height: 3vh;
+	width: 3vh;
+	margin: 1vh;
 	background-color: blue;
 }
 
@@ -99,6 +107,15 @@
 	right:0;
 }
 
+.top-right h6 {
+	color: white;
+}
+
+.end-turn {
+	height: 5vh;
+	width: 10vh;
+}
+
 .top-left {
 	position: absolute;
 	top: 3px;
@@ -107,13 +124,13 @@
 
 .bottom-right {
 	position: absolute;
-	bottom: 3px;
+	bottom: 2vh;
 	right: 3vh;
 }
 
 .bottom-left {
 	position: absolute;
-	bottom: 3px;
+	bottom: 2vh;
 	left: 3vh;
 }
 
@@ -126,7 +143,17 @@
 }
 
 .cost {
-	font-color: blue;
+	color: blue;
+}
+
+.card-in-hand .bottom-right {
+	bottom: 3px;
+	right: 3px;
+}
+
+.card-in-hand .bottom-left {
+	bottom: 3px;
+	left: 3px;
 }
 
 .green {
@@ -138,15 +165,18 @@
 }
 
 .selected {
-	outline: 1px solid green;
-}
-
-.player-hover:hover {
 	box-shadow: 0 0 10px green;
 }
 
+.player-hover:hover {
+	box-shadow: 0 0 20px green;
+}
+
+.smaller-player-hover:hover {
+	box-shadow: 0 0 10px green
+}
+
 .enemy-hover:hover {
-	outline: 1px solid red;
-	box-shadow: 0 0 10px red;
+	box-shadow: 0 0 20px red;
 }
 

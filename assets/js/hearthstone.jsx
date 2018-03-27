@@ -195,6 +195,7 @@ class Hearthstone extends React.Component {
                 inHand={true} 
                 keyname={'opp-hand-' + index}
                 opponent={true}
+                selectedCard={this.state.selected}
               />
             );
           }, this)}
@@ -222,6 +223,7 @@ class Hearthstone extends React.Component {
                 inHand={true}
                 health={card.health}
                 opponent={false}
+                selectedCard={this.state.selected}
                 title={card.title}
               />
             );
@@ -274,6 +276,7 @@ class Hearthstone extends React.Component {
                 keyname={keyPrefix + index}
                 mana={card.cost}
                 opponent={player == 'opponent' ? true : false}
+                selectedCard={this.state.selected}
                 title={card.title}
               />
             );
@@ -287,7 +290,7 @@ class Hearthstone extends React.Component {
     const colorClass = (window.player == this.state.player) ? 'green' : 'grey';
     return (
       <div 
-        className={colorClass + " end-turn"}
+        className={colorClass + " top-right"}
         onClick={this.endTurn}>
         <p>End turn</p>
       </div>
@@ -411,29 +414,55 @@ class Card extends React.Component {
   }
 
   render() {
-    const { id, attack, inHand, health, cost, title, canAttack, opponent, keyname } = this.props;
-    
+    const { attack, id, index, inHand, health, cost, title, canAttack, opponent, keyname, selectedCard } = this.props;
+    let selected = selectedCard;
+    if(Object.keys(selected).length === 0) {
+      selected = {location: null, index: null}
+    }
+
+    //opponent's hand
     if(opponent && inHand) {
       return (
         <div className="backwards-card">
         </div>
       );
     }
-    
-    //const className = inHand ? "card-in-hand" : "card-on-field";
-    const className = "backwards-card";
 
-    return (
-      <div 
-        className={className} 
-        key={keyname}
-        onClick={this.handleClick}>
-        <h6>{title}</h6>
-        <p>Attack: {attack}</p>
-        <p>Health: {health}</p>
-        <p>Cost: {cost}</p>
-      </div>
-    )
+    let className = opponent ? 'enemy-hover' : 'player-hover';
+    //if this card matches the currently selected card, keep it outlined. matching the location gets a bit verbose but it works
+    if(!opponent && index == selected.index && 
+      (inHand && selected.location == "hand") || (!inHand && selected.location == "battlefield")) {
+      className += ' selected';
+    }
+    //if it's in the player's hand
+    if(!opponent && inHand) {
+      className += ' card-in-hand';
+      return (
+        <div 
+          className={className}
+          key={keyname}
+          onClick={this.handleClick}>
+          <h6>{title}</h6>
+          <p className="bottom-left attack">A: {attack}</p>
+          <p className="bottom-right health">H: {health}</p>
+          <p className="top-left cost">{cost}</p>
+        </div>
+      )
+    }
+
+    else {
+      className += ' card-on-field';
+      return (
+        <div 
+          className={className} 
+          key={keyname}
+          onClick={this.handleClick}>
+          <h3 className="centered-letter text-center">{title.charAt(0)}</h3>
+          <p className="bottom-left attack">{attack}</p>
+          <p className="bottom-right health">{health}</p>
+        </div>
+      )
+    }
   }
 }
 

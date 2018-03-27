@@ -32,10 +32,12 @@ class Hearthstone extends React.Component {
     this.channel.on("start", this.startMatch.bind(this));
     this.channel.on("turnchange", this.update.bind(this));
     this.cardClickHandler = this.cardClickHandler.bind(this);
+    this.battlefieldClickHandler = this.battlefieldClickHandler.bind(this);
+    this.faceClick = this.faceClick.bind(this);
+    this.endTurn = this.endTurn.bind(this);
   }
 
   joinGame(resp) {
-    console.log("joined called");
     if (resp.game) {
       window.player = resp.player;
       this.setState(resp.game);
@@ -45,21 +47,19 @@ class Hearthstone extends React.Component {
   }
 
   update(game) {
-    console.log("updating game")
     this.setState(game.game);
   }
 
   startMatch(game) {
-    console.log("starrted match")
     this.setState(game.game);
   }
 
   //if opponent = true, it belongs to the opponent
   cardClickHandler(location, index, opponent) {
-    console.log("handling from hearthstone.jsx")
+    console.log("cardClickHandler")
     const { selected } = this.state;
     //if no card is selected and the selected card is an opponents
-    if(selected == {} && !opponent) {
+    if(Object.keys(selected).length === 0 && !opponent) {
       console.log("setting new selected card")
       //then this card becomes 'selected'
       const newSelected = { location, index };
@@ -67,10 +67,10 @@ class Hearthstone extends React.Component {
       return;
     }
     if(selected.location == 'battlefield' && opponent 
-      && location == 'battlefield') {
+      && location == 'battlefield')  {
       console.log("FIGHT")
         //THIS.FIGHT(index). make sure those functions reset selected
-      returnl;
+      return;
     }
     console.log("unselecting from card")
     this.setState({ selected: {} });
@@ -79,25 +79,26 @@ class Hearthstone extends React.Component {
     //result in nothing happening. make sure to test it.
   }
 
-  battlefieldClickHandler() {
+  battlefieldClickHandler(player) {
     const { selected } = this.state;
-    if(selected != {} && selected.location == 'hand') {
+    if(Object.keys(selected).length > 0  && selected.location == 'hand') {
       console.log("placing card")
       //this.place()/this.displayAndMessage(). ill figure it out...
     }
     else {
-      console.log("unselecting card from battlefield")
-      this.setState({ selected: {} });
+      // console.log("unselecting card from battlefield")
+      //this.setState({ selected: {} });
     }
   }
 
   faceClick() {
     const { selected } = this.state;
-    if(selected != {} && selected.location == 'battlefield') {
+    if(Object.keys(selected).length > 0 && selected.location == 'battlefield') {
       console.log("swinging at face")
       //this.fight. or somethin.
     }
     else {
+      console.log("unselecting card from face")
       this.setState({ selected: {} });
     }
   }
@@ -163,7 +164,7 @@ class Hearthstone extends React.Component {
           {handArray.map(function(card, index) { //for what it's worth, these variables dont matter
             return (
               <Card
-                clickHandler={this.clickHandler}
+                clickHandler={this.cardClickHandler}
                 inHand={true} 
                 keyname={'opp-hand-' + index}
                 opponent={true}
@@ -177,7 +178,8 @@ class Hearthstone extends React.Component {
 
   renderPlayerHand() {
     const { hand } = this.state;
-
+    console.log("RENDERING PLAYE RHAND")
+    console.log(this.clickHandler)
     return (
       <div className="container">
         <div className="row">
@@ -186,12 +188,13 @@ class Hearthstone extends React.Component {
               <Card 
                 attack={card.attack}
                 canAttack={false} //im assuming it's false anyway when it's in hand...
-                clickHandler={this.clickHandler}
+                clickHandler={this.cardClickHandler}
                 cost={card.cost}
                 index={index}
                 keyname={"player-hand-" + index}
                 inHand={true}
                 health={card.health}
+                opponent={false}
                 title={card.title}
               />
             );
@@ -237,7 +240,7 @@ class Hearthstone extends React.Component {
               <Card
                 attack={card.attack}
                 canAttack={card.can_attack}
-                click={this.clickHandler}
+                clickHandler={this.cardClickHandler}
                 health={card.health}
                 index={index}
                 inHand={false}
@@ -282,11 +285,10 @@ class Hearthstone extends React.Component {
   }
 
   render() {
-    //console.log("rendering, current state:")
-    //this.makeFakeState()
-    console.log("rendering")
-    console.log(this.state)
-    //console.log(this.state)
+    console.log("render, selected:")
+    this.makeFakeState();
+    console.log(this.state.selected)
+
     return (
       <div>
         <div className="enemy-side">
@@ -294,7 +296,9 @@ class Hearthstone extends React.Component {
             {this.renderOppHand()}
           </div>
           <div className="player-stats">
-            <div className="avatar">
+            <div 
+              className="avatar"
+              onClick={this.faceClick}>
               {this.renderPlayer('opponent')}
             </div>
             <div className="mana">
@@ -309,7 +313,9 @@ class Hearthstone extends React.Component {
           </div>
         </div>
         <div className="player-side">
-          <div className="battlefield-player">
+          <div 
+            className="battlefield-player"
+            onClick={this.battlefieldClickHandler}>
             {this.renderBattlefield('player')}
           </div>
           <div className="player-stats">
@@ -355,11 +361,10 @@ class Card extends React.Component {
   constructor(props) {
     super(props);
     this.handleClick = this.handleClick.bind(this)
-    console.log("nice")
   }
 
   handleClick() {
-    const { clickHandler, index, opponent } = this.props
+    const { clickHandler, index, inHand, opponent } = this.props
     const location = inHand ? "hand" : "battlefield";
     clickHandler(location, index, opponent);
   }

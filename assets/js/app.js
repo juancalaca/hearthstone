@@ -55,7 +55,6 @@ function add_card() {
 }
 
 function init() {
-  console.log("initing")
 
   let add_card = document.getElementById("add-card");
   if (add_card) {

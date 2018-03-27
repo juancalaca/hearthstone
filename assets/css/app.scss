@@ -25,6 +25,7 @@
 	margin-bottom: 3vh;
 	border-top-style: solid;
 	border-width: 3px;
+	position: relative;
 }
 
 .player-avatar {
@@ -69,4 +70,18 @@
 
 .player-hand {
 	margin-top: 10vh;
+}
+
+.end-turn {
+	position: absolute;
+	top:0;
+	right:0;
+}
+
+.green {
+	background-color: green;
+}
+
+.grey {
+	background-color: grey;
 }

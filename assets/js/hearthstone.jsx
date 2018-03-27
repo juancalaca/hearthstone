@@ -47,11 +47,35 @@ class Hearthstone extends React.Component {
   }
 
   update(game) {
-    this.setState(game.game);
+    const updated = game.game;
+    console.log("updateeee?")
+    console.log(updated)
+    updated.selected = {};
+    this.setState(updated);
   }
 
   startMatch(game) {
     this.setState(game.game);
+  }
+
+  errorAlert(msg) {
+    alert(msg);
+    this.setState({ selected: {} });
+  }
+
+  place() {
+    const { selected } = this.state;
+    this.channel.push("place", { card_index: selected.index })
+      .receive("ok", this.update.bind(this))
+      .receive("error", resp => { this.errorAlert("Not enough mana!") });
+  }
+
+  fight(minionIndex) {
+    console.log("fighting")
+    const { selected } = this.state;
+    this.channel.push("attack_min", {card_ind: selected.index, ocard_ind: minionIndex })
+      .receive("ok", this.update.bind(this))
+      .receive("error", resp => { this.errorAlert("Minion cannot attack this turn") })
   }
 
   //if opponent = true, it belongs to the opponent
@@ -69,7 +93,7 @@ class Hearthstone extends React.Component {
     if(selected.location == 'battlefield' && opponent 
       && location == 'battlefield')  {
       console.log("FIGHT")
-        //THIS.FIGHT(index). make sure those functions reset selected
+      this.fight(index) //make sure those functions reset selected
       return;
     }
     console.log("unselecting from card")
@@ -83,7 +107,7 @@ class Hearthstone extends React.Component {
     const { selected } = this.state;
     if(Object.keys(selected).length > 0  && selected.location == 'hand') {
       console.log("placing card")
-      //this.place()/this.displayAndMessage(). ill figure it out...
+      this.place()
     }
     else {
       // console.log("unselecting card from battlefield")
@@ -95,7 +119,10 @@ class Hearthstone extends React.Component {
     const { selected } = this.state;
     if(Object.keys(selected).length > 0 && selected.location == 'battlefield') {
       console.log("swinging at face")
-      //this.fight. or somethin.
+      this.channel.push("attack_hero", { card_index: selected.index })
+        .receive("ok", this.update.bind(this))
+        .receive("gameover", resp => { alert("Game over! " + window.player + " has won.") })
+        .receive("error", resp => { this.errorAlert("Minion cannot attack this turn") })
     }
     else {
       console.log("unselecting card from face")
@@ -104,7 +131,7 @@ class Hearthstone extends React.Component {
   }
 
   endTurn() {
-    //send end turn message
+    this.channel.push("endturn")
   }
 
   renderDeck(player) {
@@ -256,6 +283,17 @@ class Hearthstone extends React.Component {
     );
   }
 
+  renderEndTurnButton() {
+    const colorClass = (window.player == this.state.player) ? 'green' : 'grey';
+    return (
+      <div 
+        className={colorClass + " end-turn"}
+        onClick={this.endTurn}>
+        <p>End turn</p>
+      </div>
+    )
+  }
+
   makeFakeState() {
     //const {deck, hand, minions, health, opp_deck, opp_hand, opp_minions, opp_hand}
     this.state.opp_hand = 4;
@@ -286,8 +324,8 @@ class Hearthstone extends React.Component {
 
   render() {
     console.log("render, selected:")
-    this.makeFakeState();
-    console.log(this.state.selected)
+    //this.makeFakeState();
+    console.log(this.state)
 
     return (
       <div>
@@ -316,6 +354,9 @@ class Hearthstone extends React.Component {
           <div 
             className="battlefield-player"
             onClick={this.battlefieldClickHandler}>
+            <div>
+              {this.renderEndTurnButton()}>
+            </div>
             {this.renderBattlefield('player')}
           </div>
           <div className="player-stats">

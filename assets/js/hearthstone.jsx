@@ -116,8 +116,6 @@ class Hearthstone extends React.Component {
     }
     this.setState({ selected: {} });
     return;
-    //hopefully this means literally anything other condition will
-    //result in nothing happening. make sure to test it.
   }
 
   battlefieldClickHandler(player) {
@@ -196,7 +194,6 @@ class Hearthstone extends React.Component {
     //class cards should put cards side by side
     return (
       <div className="container">
-        <p>OPPHAND</p>
         <div className="row">
           {handArray.map(function(card, index) { //for what it's worth, these variables dont matter
             return (

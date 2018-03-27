@@ -1,0 +1,13 @@
+<h1 style="margin: 2vhi; text-align: center;">Instructions for Minimal Hearthstone</h1>
+<hr>
+<ul>
+  <li>The game will begin when both players join the same game (by typing in the same name into the input field and pressing “Join game”</li>
+  <li>The first player to join will be Player 1. Player 1 will start the game with 1 mana and will also draw a random card from their deck. You may play a card onto the battlefield if you have enough mana (the cost of the card is a blue number in the top left of the card, and your remaining mana is represented by blue squares in the bottom right field. </li>
+  <li> To play a card, first click on the card, then click on your battlefield to attempt to place it. If you have enough mana, this will occur successfully. If not, an error message will appear. </li>
+  <li> A card cannot attack immediately when it is placed. You must wait a turn before attack with a card. </li>
+  <li> Additional info: A card’s attack is on the bottom left, and it’s health is in red on the bottom right.</li>
+  <li> When you decide to end your turn, click the end turn button. While the button is green, it is your turn. While it is grey’d out, it is the opponent’s turn. </li>
+  <li> To attack with a minion, click on the card (that’s on the battlefield), then click on a target. A target is either an enemy minion or the enemy’s health (which is their portrait). When minions attack each other, they deal damage to each other. </li>
+  <li> Whenever it is your turn, your mana replenishes and increments by 1, until you have 10 mana. </li>
+  <li> When a player’s health goes to 0 or lower, the game is over and they lose.  </li>
+</ul>

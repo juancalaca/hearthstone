@@ -19,6 +19,8 @@ defmodule HearthstoneWeb.Router do
     get "/", PageController, :index
     get "/add", PageController, :add
     get "/game/:game", PageController, :game
+    get "/instructions", PageController, :instructions
+    get "/layout", PageController, :layout
   end
 
   # Other scopes may use custom stacks.

@@ -28,7 +28,7 @@ class Hearthstone extends React.Component {
                 .receive("ok", this.joinGame.bind(this))
                 .receive("error", resp => { this.errorAlert(resp.reason);
                                             window.location.href = "/";})
-    
+
     this.channel.on("gameover", this.gameOver.bind(this));
     this.channel.on("update", this.update.bind(this));
     this.channel.on("start", this.startMatch.bind(this));
@@ -109,9 +109,9 @@ class Hearthstone extends React.Component {
       this.setState({ selected: newSelected });
       return;
     }
-    if(selected.location == 'battlefield' && opponent 
+    if(selected.location == 'battlefield' && opponent
       && location == 'battlefield')  {
-      this.fight(index) //make sure those functions reset selected
+      this.fight(index)
       return;
     }
     this.setState({ selected: {} });
@@ -130,7 +130,6 @@ class Hearthstone extends React.Component {
     if(Object.keys(selected).length > 0 && selected.location == 'battlefield') {
       this.channel.push("attack_hero", { card_index: selected.index })
         .receive("ok", this.update.bind(this))
-        //.receive("gameover", resp => { alert("Game over! " + window.player + " has won.") })
         .receive("error", resp => { this.errorAlert(resp.reason) })
     }
     else {
@@ -169,12 +168,6 @@ class Hearthstone extends React.Component {
     if(player == 'opponent' && playerName == 'player2') {
       className = 'jaina enemy-hover';
     }
-    /* if(player == 'player') {
-      className = 'jaina'
-    }
-    else {
-      className = "GARROSH"
-    } */
     className += ' player-avatar text-center'
     var health = player == 'player' ? this.state.health : this.state.opp_health;
     return (
@@ -187,19 +180,17 @@ class Hearthstone extends React.Component {
   renderOppHand() {
     const size = this.state.opp_hand;
     const handArray = [];
-    //just make an array of size 'size' so that i can map over it
     for(let i = 0; i < size; i ++) {
       handArray.push("card")
     }
-    //class cards should put cards side by side
     return (
       <div className="container">
         <div className="row">
-          {handArray.map(function(card, index) { //for what it's worth, these variables dont matter
+          {handArray.map(function(card, index) {
             return (
               <Card
                 clickHandler={this.cardClickHandler}
-                inHand={true} 
+                inHand={true}
                 key={'opp-hand-' + index}
                 opponent={true}
                 selectedCard={this.state.selected}
@@ -216,11 +207,11 @@ class Hearthstone extends React.Component {
     return (
       <div className="container">
         <div className="row">
-          {hand.map(function(card, index) { //okay these variables are more useful
+          {hand.map(function(card, index) {
             return (
-              <Card 
+              <Card
                 attack={card.attack}
-                canAttack={false} //im assuming it's false anyway when it's in hand...
+                canAttack={false}
                 clickHandler={this.cardClickHandler}
                 cost={card.cost}
                 index={index}
@@ -319,7 +310,7 @@ class Hearthstone extends React.Component {
             {this.renderOppHand()}
           </div>
           <div className="player-stats">
-            <div 
+            <div
               className="avatar"
               onClick={this.faceClick}>
               {this.renderPlayer('opponent')}
@@ -336,7 +327,7 @@ class Hearthstone extends React.Component {
           </div>
         </div>
         <div className="player-side">
-          <div 
+          <div
             className={playerBattlefieldClassName}
             onClick={this.battlefieldClickHandler}>
             <div>
@@ -364,7 +355,6 @@ class Hearthstone extends React.Component {
   }
 }
 
-//todo af: clickhandler
 class Card extends React.Component {
   constructor(props) {
     super(props);
@@ -394,7 +384,7 @@ class Card extends React.Component {
 
     let className = opponent ? 'enemy-hover' : 'player-hover';
     //if this card matches the currently selected card, keep it outlined. matching the location gets a bit verbose but it works
-    if(!opponent && index == selected.index && 
+    if(!opponent && index == selected.index &&
       ((inHand && selected.location == "hand") || (!inHand && selected.location == "battlefield"))) {
       className += ' selected';
     }
@@ -402,7 +392,7 @@ class Card extends React.Component {
     if(!opponent && inHand) {
       className += ' card-in-hand';
       return (
-        <div 
+        <div
           className={className}
           onClick={this.handleClick}>
           <h6 className="centered-letter text-center">{title}</h6>
@@ -422,8 +412,8 @@ class Card extends React.Component {
         className += ' player-can-attack';
       }
       return (
-        <div 
-          className={className} 
+        <div
+          className={className}
           onClick={this.handleClick}>
           <h4 className="centered-letter text-center">{title.substring(0, 3) + "."}</h4>
           <h6 className="bottom-left attack">{attack}</h6>

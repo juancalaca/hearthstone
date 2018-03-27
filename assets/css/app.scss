@@ -7,7 +7,7 @@
 }
 
 .backwards-card {
-	background-color: #614e45; /*most of these colors will be replaced w textures*/
+	background-color: #614e45; 
 	height: 20vh;
 	width: 12vh;
 	margin: 2vh;
@@ -44,13 +44,13 @@
 
 .battlefield-opp {
 	height: 30vh;
-	background-color: #c2b280;	
+	background-color: #c2b280;
 	margin-top: 3vh;
 }
 
 .battlefield-player {
 	height: 30vh;
-	background-color: #c2b280;	
+	background-color: #c2b280;
 	margin-bottom: 3vh;
 	border-top-style: solid;
 	border-width: 3px;
@@ -179,4 +179,3 @@
 .enemy-hover:hover {
 	box-shadow: 0 0 20px red;
 }
-

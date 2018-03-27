@@ -60,20 +60,50 @@ class Hearthstone extends React.Component {
     const { selected } = this.state;
     //if no card is selected and the selected card is an opponents
     if(selected == {} && !opponent) {
+      console.log("setting new selected card")
       //then this card becomes 'selected'
       const newSelected = { location, index };
       this.setState({ selected: newSelected });
       return;
     }
-    if(selected.location == 'battlefield') {
-      if(opponent && location == 'battlefield') {
-        //THIS.FIGHT(index) 
-        return;
-      }
+    if(selected.location == 'battlefield' && opponent 
+      && location == 'battlefield') {
+      console.log("FIGHT")
+        //THIS.FIGHT(index). make sure those functions reset selected
+      returnl;
     }
+    console.log("unselecting from card")
     this.setState({ selected: {} });
+    return;
     //hopefully this means literally anything other condition will
     //result in nothing happening. make sure to test it.
+  }
+
+  battlefieldClickHandler() {
+    const { selected } = this.state;
+    if(selected != {} && selected.location == 'hand') {
+      console.log("placing card")
+      //this.place()/this.displayAndMessage(). ill figure it out...
+    }
+    else {
+      console.log("unselecting card from battlefield")
+      this.setState({ selected: {} });
+    }
+  }
+
+  faceClick() {
+    const { selected } = this.state;
+    if(selected != {} && selected.location == 'battlefield') {
+      console.log("swinging at face")
+      //this.fight. or somethin.
+    }
+    else {
+      this.setState({ selected: {} });
+    }
+  }
+
+  endTurn() {
+    //send end turn message
   }
 
   renderDeck(player) {
@@ -253,8 +283,9 @@ class Hearthstone extends React.Component {
 
   render() {
     //console.log("rendering, current state:")
-    this.makeFakeState()
-
+    //this.makeFakeState()
+    console.log("rendering")
+    console.log(this.state)
     //console.log(this.state)
     return (
       <div>

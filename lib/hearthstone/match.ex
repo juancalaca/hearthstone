@@ -3,6 +3,8 @@ defmodule Hearthstone.Match do
 
   def new() do
     card_range = Game.get_indeces
+    IO.puts "NEW"
+    IO.puts card_range
     %{
       "player" => "player1",
       "turn_num" => 1,

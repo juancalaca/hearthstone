@@ -83,14 +83,18 @@ defmodule Hearthstone.Match do
 
     card = Enum.at(player_state.hand, card_index)
 
-    if card.cost <= player_state.mana do
+    if card.cost <= player_state.mana  && length(player_state.minions) <= 7 do
       updated_ps = Map.put(player_state, :mana, player_state.mana - card.cost)
       |> Map.put(:minions, player_state.minions ++ [card])
       |> Map.put(:hand, List.delete(player_state.hand, card))
       game = Map.put(game, player, updated_ps)
       {:ok, game}
     else
-      {:error, game}
+      if length(player_state.minions) > 7 do
+        {:minions, game}
+      else
+        {:mana, game}
+      end
     end
   end
 

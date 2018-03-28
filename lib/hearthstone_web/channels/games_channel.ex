@@ -45,8 +45,10 @@ defmodule HearthstoneWeb.GamesChannel do
           Backup.save_game(socket.assigns[:name], game)
           broadcast! socket, "update", %{"game" => game}
           {:noreply, socket}
-        {:error, _} ->
+        {:mana, _} ->
           {:reply, {:error, %{reason: "Not enough mana to place card, try again."}}, socket}
+        {:minions, _} ->
+          {:reply, {:error, %{reason: "Can only have 7 minions in battlefield."}}, socket}
       end
     else
       {:reply, {:error, %{reason: "Not your turn."}}, socket}

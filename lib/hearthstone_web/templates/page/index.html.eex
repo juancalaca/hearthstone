@@ -1,6 +1,14 @@
-<h1>Minimal Hearthstone!</h1>
-
-<div id="game">
+<style>
+.btn {
+  margin-top: 2vh;
+}
+.title {
+  margin: 2vh;
+}
+</style>
+<h1 class="title">Minimal Hearthstone!</h1>
+<hr>
+<div id="container">
   <div class="row">
     <div class="col-md-5">
       <h1 id="index-page">Join A Game</h1>
@@ -13,6 +21,20 @@
           </div>
         </form>
       </div>
+    </div>
+    <div class="col">
+      <h4> Welcome to Minimal Hearthstone! </h4>
+      <p>
+        To join a game session, please input a game name. If the session is full you will be redirected back
+        to this page. Once you join a game, <strong>please make sure not to refresh or close your window</strong>
+        , doing so will effectively remove you from the game session and your opponent will be stalled.
+      </p>
+
+      <p> This game is best viewed in full screen. </p>
+
+      <p> You can find these helpful links during a match at the lower left hand corner! </p>
+      <%= link "Instructions", to: page_path(@conn, :instructions) %> |
+      <%= link "Layout Explanation", to: page_path(@conn, :layout) %>
     </div>
   </div>
 </div>

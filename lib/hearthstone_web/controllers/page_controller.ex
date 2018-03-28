@@ -12,4 +12,12 @@ defmodule HearthstoneWeb.PageController do
   def game(conn, params) do
     render conn, "game.html", game: params["game"]
   end
+
+  def instructions(conn, _params) do 
+    render conn, "instructions.html"
+  end
+
+  def layout(conn, _params) do
+    render conn, "layout.html"
+  end
 end

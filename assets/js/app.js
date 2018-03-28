@@ -44,7 +44,6 @@ function add_card() {
     $.ajax("/api/v1/cards", {
       method: "post",
       dataType: "text",
-      //data: new_card,
       contentType: "application/json; charset=UTF-8",
       data: new_card,
       success: (succ) => { console.log(succ); },
@@ -56,10 +55,8 @@ function add_card() {
 
 function init() {
 
-  let add_card = document.getElementById("add-card");
-  if (add_card) {
-    console.log("New card");
-    //$('#submit-card').click(add_card);
+  let addcard = document.getElementById("add-card");
+  if (addcard) {
     add_card();
   }
 
@@ -68,53 +65,6 @@ function init() {
     let channel = socket.channel("games:" + window.gameName, {})
 
     run_hearthstone(root, channel);
-
-    // channel.join()
-    //   .receive("ok", resp => { window.player = resp.player; if(resp.game) game = resp.game; })
-    //   .receive("error", resp => { console.log("Unable to join", resp); })
-    //
-    //   let game = null;
-    //   channel.on("update", resp => { game = resp.game; console.log(resp.game) })
-    //   channel.on("start", resp => { game = resp.game; console.log(game)})
-
-      $('#turn').click(function(ev) {
-         channel.push("turn", {})
-                .receive("error", resp => { console.log(resp); })
-      })
-
-      $('#endturn').click(function(ev) {
-          channel.push("endturn", {})
-                 .receive("error", resp => { console.log(resp); })
-      })
-
-      //if (game) {
-      //document.getElementById("display").innerHTML = "<ul><li>Player: " + window.player + "</li><li>Turn: " + game.player + "</li><li>Deck: " + game.deck + "</li>";
-      //}
-     $('#place').submit(function(ev) {
-       ev.preventDefault();
-       var card_index = $('#place-min').val();
-
-       channel.push("place", {card_index: parseInt(card_index)})
-              .receive("error", resp => {window.alert(resp.reason)});
-     });
-
-    $('#attack-min').submit(function(ev) {
-      ev.preventDefault();
-      var att_ind = $('#attacker-min').val()
-      var rec_ind = $('#rec-min').val()
-
-      channel.push("attack_min", {card_ind: parseInt(att_ind), ocard_ind: parseInt(rec_ind)})
-             .receive("error", resp => {window.alert(resp.reason)})
-    })
-  
-    $('#attack-hero').submit(function(ev) {
-      ev.preventDefault()
-
-      var id = $('#attacker').val()
-
-      channel.push("attack_hero", {card_index: parseInt(id)})
-             .receive("error", resp => {window.alert(resp.reason)})
-    })
 
   }
 }

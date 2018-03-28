@@ -1,2 +1,181 @@
 /* This file is for your main application css. */
 @import "bootstrap";
+
+.board {
+	position: absolute;
+	left: 50%;
+}
+
+.backwards-card {
+	background-color: #614e45; 
+	height: 20vh;
+	width: 12vh;
+	margin: 2vh;
+}
+
+.card-in-hand {
+	position: relative;
+	height: 20vh;
+	width: 12vh;
+	margin: 2vh;
+	background-color: #A89787;
+}
+
+.card-on-field {
+	position: relative;
+	border-radius: 50%;
+	height: 20vh;
+	width: 13vh;
+	margin: 2vh;
+	background-color: #A89787;
+}
+
+.opponent-can-attack {
+	background-color: #E68E8E;
+}
+
+.player-can-attack {
+	background-color: #B6DCA2;
+}
+
+.centered-letter {
+	margin-top: 4vh;
+}
+
+.battlefield-opp {
+	height: 30vh;
+	background-color: #c2b280;
+	margin-top: 3vh;
+}
+
+.battlefield-player {
+	height: 30vh;
+	background-color: #c2b280;
+	margin-bottom: 3vh;
+	border-top-style: solid;
+	border-width: 3px;
+	position: relative;
+}
+
+.player-avatar {
+	height: 18vh;
+	width: 12vh;
+	border-radius: 50px 50px 0px 0px;
+	position: absolute;
+  	left: 50%;
+}
+
+.player-health {
+	position: absolute;
+	color: white;
+	padding-top: 40%;
+}
+
+.jaina {
+	background-color: blue;
+}
+
+.GARROSH {
+	/*GARROSH HELLSCREAM*/
+	background-color: red;
+}
+
+.deck {
+	height: 10vh;
+	width: 10vh;
+	background-color: #8aacb8;
+}
+
+.mana {
+	float: right;
+}
+
+.mana-crystal-unspent {
+	height: 3vh;
+	width: 3vh;
+	margin: 1vh;
+	background-color: blue;
+}
+
+.player-hand {
+	margin-top: 10vh;
+}
+
+.top-right {
+	position: absolute;
+	top:0;
+	right:0;
+}
+
+.top-right h6 {
+	color: white;
+}
+
+.end-turn {
+	height: 5vh;
+	width: 10vh;
+}
+
+.top-left {
+	position: absolute;
+	top: 3px;
+	left: 3px;
+}
+
+.bottom-right {
+	position: absolute;
+	bottom: 2vh;
+	right: 3vh;
+}
+
+.bottom-left {
+	position: absolute;
+	bottom: 2vh;
+	left: 3vh;
+}
+
+.health {
+	color: red;
+}
+
+.attack {
+	color: white;
+}
+
+.cost {
+	color: blue;
+}
+
+.card-in-hand .bottom-right {
+	bottom: 3px;
+	right: 3px;
+}
+
+.card-in-hand .bottom-left {
+	bottom: 3px;
+	left: 3px;
+}
+
+.green {
+	background-color: green;
+}
+
+.grey {
+	background-color: grey;
+}
+
+.selected {
+	box-shadow: 0 0 10px green;
+}
+
+.player-hover:hover {
+	box-shadow: 0 0 20px green;
+}
+
+.smaller-player-hover:hover {
+	box-shadow: 0 0 10px green
+}
+
+.enemy-hover:hover {
+	box-shadow: 0 0 20px red;
+}

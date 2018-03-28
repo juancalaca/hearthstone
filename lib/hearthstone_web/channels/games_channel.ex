@@ -9,7 +9,7 @@ defmodule HearthstoneWeb.GamesChannel do
     if authorized?(payload) do
       game = Backup.get_game(name)
       if game == nil do
-        socket = assign(socket, :player, "player1") 
+        socket = assign(socket, :player, "player1")
         Backup.save_game(name, "player1")
         {:ok, %{"player" => "player1"}, assign(socket, :name, name)}
       else
@@ -21,13 +21,12 @@ defmodule HearthstoneWeb.GamesChannel do
           socket = assign(socket, :name, name)
           |> assign(:player, "player2")
           Endpoint.broadcast "games:" <> name, "start", %{"game" => Match.game_view(game, "player1")}
-          #broadcast! socket, "update", %{"game" => game}
           {:ok, %{"player" => "player2", "game" => Match.game_view(game, "player2")}, socket}
         end
       end
     else
       {:error, %{reason: "unauthorized"}}
-    end    
+    end
   end
 
   def handle_in("turn", payload, socket) do
@@ -38,58 +37,70 @@ defmodule HearthstoneWeb.GamesChannel do
     {:noreply, socket}
   end
 
-  # Expected payload is index of minion in hand of socket.assigns[:player]
-  def handle_in("place", %{"card_index" => card_index}, socket) do 
+  def handle_in("place", %{"card_index" => card_index}, socket) do
     game = Backup.get_game(socket.assigns[:name])
-    case Match.place(game, socket.assigns[:player], card_index) do
-      {:ok, game} ->
-        Backup.save_game(socket.assigns[:name], game)
-        broadcast! socket, "update", %{"game" => game}
-        {:noreply, socket}
-      {:error, _} ->
-        {:reply, {:error, %{reason: "Not enough mana to place card, try again."}}, socket}
+    if Match.check_turn(game, socket.assigns[:player]) do
+      case Match.place(game, socket.assigns[:player], card_index) do
+        {:ok, game} ->
+          Backup.save_game(socket.assigns[:name], game)
+          broadcast! socket, "update", %{"game" => game}
+          {:noreply, socket}
+        {:mana, _} ->
+          {:reply, {:error, %{reason: "Not enough mana to place card, try again."}}, socket}
+        {:minions, _} ->
+          {:reply, {:error, %{reason: "Can only have 7 minions in battlefield."}}, socket}
+      end
+    else
+      {:reply, {:error, %{reason: "Not your turn."}}, socket}
     end
   end
 
-  # Expected payload format: %{"card_ind" => (int), "ocard_ind" => (int)}
-  # Card index is of minion that attacks, ocard index is the minion to attack in opp hand
   def handle_in("attack_min", %{"card_ind" => card_ind, "ocard_ind" => ocard_ind}, socket) do
     game = Backup.get_game(socket.assigns[:name])
-    case Match.attack_minion(game, socket.assigns[:player], card_ind, ocard_ind) do
-      {:ok, game} ->
-        Backup.save_game(socket.assigns[:name], game)
-        broadcast! socket, "update", %{"game" => game}
-        {:noreply, socket}
-      {:error, _} ->
-        {:reply, {:error, %{reason: "Minion cannot attack in this turn, please try again."}}, socket}
+    if Match.check_turn(game, socket.assigns[:player]) do
+      case Match.attack_minion(game, socket.assigns[:player], card_ind, ocard_ind) do
+        {:ok, game} ->
+          Backup.save_game(socket.assigns[:name], game)
+          broadcast! socket, "update", %{"game" => game}
+          {:noreply, socket}
+        {:error, _} ->
+          {:reply, {:error, %{reason: "Minion cannot attack in this turn, please try again."}}, socket}
+      end
+    else
+      {:reply, {:error, %{reason: "Not your turn."}}, socket}
     end
   end
 
-  # Expected payload index of minion to attack
-  # what about 
   def handle_in("attack_hero", %{"card_index" => card_index}, socket) do
     game = Backup.get_game(socket.assigns[:name])
-    case Match.attack_hero(game, socket.assigns[:player], card_index) do
-      {:ok, game} ->
-        Backup.save_game(socket.assigns[:name], game)
-        broadcast! socket, "update", %{"game" => game}
-        {:noreply, socket}
-      {:gameover, game} ->
-        Backup.save_game(socket.assigns[:name], nil) # TODO: WANT THIS?
-        broadcast! socket, "gameover", %{"game" => game} # TODO: WANT THIS?
-        {:noreply, socket}
-      {:error, _} ->
-        {:reply, {:error, %{reason: "Minion cannot attack in this turn, please try again."}}, socket}
-    end 
+    if Match.check_turn(game, socket.assigns[:player]) do
+      case Match.attack_hero(game, socket.assigns[:player], card_index) do
+        {:ok, game} ->
+          Backup.save_game(socket.assigns[:name], game)
+          broadcast! socket, "update", %{"game" => game}
+          {:noreply, socket}
+        {:gameover, game} ->
+          Backup.save_game(socket.assigns[:name], nil)
+          broadcast! socket, "gameover", %{"game" => game}
+          {:noreply, socket}
+        {:error, _} ->
+          {:reply, {:error, %{reason: "Minion cannot attack in this turn, please try again."}}, socket}
+      end
+    else
+      {:reply, {:error, %{reason: "Not your turn."}}, socket}
+    end
   end
-  
-  # Want to have a different message?
+
   def handle_in("endturn", payload, socket) do
-    game = Backup.get_game(socket.assigns[:name])
-    |> Match.end_turn
-    Backup.save_game(socket.assigns[:name], game)
-    broadcast! socket, "turnchange", %{"game" => game}
-    {:noreply, socket}
+    if Match.check_turn(Backup.get_game(socket.assigns[:name]), socket.assigns[:player]) do
+      game = Backup.get_game(socket.assigns[:name])
+      |> Match.end_turn
+      Backup.save_game(socket.assigns[:name], game)
+      broadcast! socket, "turnchange", %{"game" => game}
+      {:noreply, socket}
+    else
+      {:reply, {:error, %{reason: "Not your turn."}}, socket}
+    end
   end
 
 
@@ -104,10 +115,10 @@ defmodule HearthstoneWeb.GamesChannel do
   def handle_out("turnchange", payload, socket) do
     payload = Map.put(payload, :game, Match.game_view(payload["game"], socket.assigns[:player]))
     push socket, "turnchange", payload
-    {:noreply, socket}  
+    {:noreply, socket}
   end
 
   defp authorized?(params) do
     true
-  end 
+  end
 end

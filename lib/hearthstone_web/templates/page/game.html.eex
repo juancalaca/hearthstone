@@ -1,4 +1,14 @@
-<h1> Welcome to Minimal HearthStone! Game Name: <%= @game %></h1>
+<style>
+h1, h3 {
+  text-align: center;
+}
+#footer {
+    bottom:0;
+}
+</style>
+<h1> Minimal Hearthstone </h1>
+<h3> Match Name: <%= @game %></h3>
+<hr>
 <script>
   window.gameName = "<%= @game %>";
 </script>
@@ -7,32 +17,9 @@
     <div id="root">
       <p>React Game Loading...</p>
     </div>
-    <button id="turn"> Turn </button>
-    <button id="endturn"> End Turn </button>
-    <form id="place">
-      <div>
-        Minion to move: 
-        <input type="number" id="place-min">
-      </div>
-      <input class="btn btn-primary" type="submit" value="Play" >
-    </form>  
-    <form id="attack-min" >
-      <div>
-        Attacker minion:
-        <input type="number" id="attacker-min">
-      </div>
-      <div>
-        Receiver minion:
-        <input type="number" id="rec-min" >
-      </div>
-      <input class="btn btn-primary" type="submit" value="Attack Minion" >
-    </form>
-    <form id="attack-hero">
-      <div>
-        Attacker minion:
-        <input type="number" id="attacker">
-      </div>
-      <input type="submit" value="Attack Hero">
-    </form>
   </div>
+</div>
+<div id="footer">
+  <%= link "Instructions", to: page_path(@conn, :instructions), target: "_blank" %> |
+  <%= link "Layout Explanation", to: page_path(@conn, :layout), target: "_blank" %>
 </div>

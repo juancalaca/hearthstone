@@ -1,0 +1,102 @@
+<style>
+img {
+  height: 78vh;
+  float: left;
+  padding-right: 5vh;
+}
+h1, h2 {
+  text-align: center;
+}
+ol {
+  margin-left: 10vh;
+}
+ol li {
+  font-weight: bold;
+}
+li > span {
+  font-weight: normal;
+}
+</style>
+<h1> Layout Explanation for Minimal Hearthstone </h1>
+<hr>
+<h2> Player Board </h2>
+<hr>
+<p>
+  Below is a screenshot of an active game session. The bottom half of the screen pertains to your game (indicated by
+  player) and the top half belongs to your opponent. 
+</p>
+<div>
+  <img src="<%= static_path(@conn, "/images/image_1.png") %>">
+  <div>
+  <ol>
+    <li> 
+      <span> Your hero, it shows your current health. It diminishes as you take damage. If it gets to zero, you lose.</span>
+    </li>
+    <li>
+      <span> Each card you play costs a certain amount of mana. Your mana replenishes at the beginning of your turn, 
+      and each turn your mana crystals increase by one up to a final maximum of 10. </span>
+    </li> 
+    <li>
+      <span> At the beginning of each turn, you draw one card from your deck and add it to your hand. Every deck contains
+      30 cards; no more, no less. </span>
+    </li>
+    <li>
+      <span> Your hand of cards you can play, if you have enough mana. <span>
+    </li>
+    <li>
+      <span> This is your minions in the battlefield, these can attack either your opponent's hero or other minions in opponents
+      battlefield. If the minion is green it can attack, otherwise an alert will be raised. </span>
+    </li>
+    <li>
+      <span> End turn button, once you are done with your turn you click this to change the player and continue the game. </span>
+    </li>
+    <li>
+      <span> Opponent's battlefield, these are the minions you can attack. If the minion is red, the minion can attack in that round. </span>
+    </li>
+    <li>
+      <span> Opponent's hero, this shows the amount of health remaining for your opponent. Make sure to get it to 0 to win! </span>
+    </li>
+    <li>
+      <span> Your opponent's deck, only shows the amount of cards remaining in the deck </span>
+    </li>
+    <li>
+      <span> Your opponent's mana! </span>
+    </li>
+    <li>
+      <span> Your opponent's hand, shows how many cards they have in their current hand, not revealing any information about them </span>
+    </li>
+  </ol>
+  </div>
+</div>
+<div style="clear: left;">
+  <hr>
+  <h2> Individual Card </h2>
+  <hr>
+  <div class="row">
+    <div class="col">
+      <img src="<%= static_path(@conn, "/images/card.png") %>" style="height: 30vh;">
+      <ul>
+        <li> Middle: Title of the card. </li>
+        <li> Top-left hand corner: cost of the card, how many mana it costs to place the card. </li>
+        <li> Bottom-left hand corner: health of the card, decreased when attacked by opponent. </li>
+        <li> Bottom-right hand corner: attack of the card, how much damage it can cause. </li>
+      </ul>
+    </div>   
+  </div>
+</div>
+<div style="clear: left;">
+  <hr>
+  <h2> Minion In Battlefield </h2>
+  <hr>
+  <div class="row">
+    <div class="col">
+      <img src="<%= static_path(@conn, "/images/minion.png") %>" style="height: 30vh;">
+      <ul>
+        <li> Middle: Title of the card. </li>
+        <li> Bottom-left hand corner: health of the minion, decreased when attacked by opponent. </li>
+        <li> Bottom-right hand corner: attack of the minion, how much damage it can cause. </li>
+      </ul>
+    </div>
+  </div>
+</div>
+

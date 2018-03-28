@@ -30,8 +30,10 @@
         , doing so will effectively remove you from the game session and your opponent will be stalled.
       </p>
 
+      <p> This game is best viewed in full screen. </p>
+
       <p> You can find these helpful links during a match at the lower left hand corner! </p>
-      <%= link "Instructions", to: page_path(@conn, :instructions) %> | 
+      <%= link "Instructions", to: page_path(@conn, :instructions) %> |
       <%= link "Layout Explanation", to: page_path(@conn, :layout) %>
     </div>
   </div>

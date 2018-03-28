@@ -404,7 +404,7 @@ class Card extends React.Component {
     }
 
     else {
-      className += ' col-md-2 card-on-field';
+      className += ' card-on-field';
       if(canAttack && opponent) {
         className += ' opponent-can-attack';
       }

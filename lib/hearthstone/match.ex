@@ -90,7 +90,7 @@ defmodule Hearthstone.Match do
       game = Map.put(game, player, updated_ps)
       {:ok, game}
     else
-      if length(player_state.minions) > 7 do
+      if length(player_state.minions) >= 7 do
         {:minions, game}
       else
         {:mana, game}
